@@ -1,0 +1,470 @@
+# MySQL Date and Time Functions
+
+## 1. CURRENT_DATE
+Returns the current date.
+
+```sql
+SELECT CURRENT_DATE();
+```
+
+Example Output:
+
+```text
+2026-05-22
+```
+
+Using with `orders` table:
+
+```sql
+SELECT orderNumber, CURRENT_DATE() AS today
+FROM orders;
+```
+
+---
+
+## 2. CURRENT_TIME
+Returns the current time.
+
+```sql
+SELECT CURRENT_TIME();
+```
+
+Example Output:
+
+```text
+16:30:45
+```
+
+---
+
+## 3. NOW()
+Returns current date and time.
+
+```sql
+SELECT NOW();
+```
+
+Example Output:
+
+```text
+2026-05-22 16:30:45
+```
+
+Using with classicmodels:
+
+```sql
+SELECT customerName, NOW() AS generated_time
+FROM customers;
+```
+
+---
+
+## 4. DATE_ADD()
+Adds a time/date interval to a date.
+
+### Syntax
+
+```sql
+DATE_ADD(date, INTERVAL value unit)
+```
+
+### Example
+
+```sql
+SELECT DATE_ADD('2026-05-22', INTERVAL 10 DAY);
+```
+
+### Add 30 days to order date
+
+```sql
+SELECT 
+    orderNumber,
+    orderDate,
+    DATE_ADD(orderDate, INTERVAL 30 DAY) AS due_date
+FROM orders;
+```
+
+### Common Units
+- DAY
+- MONTH
+- YEAR
+- HOUR
+- MINUTE
+
+---
+
+## 5. DATE_SUB()
+Subtracts a time/date interval from a date.
+
+```sql
+SELECT DATE_SUB('2026-05-22', INTERVAL 7 DAY);
+```
+
+Example with orders:
+
+```sql
+SELECT 
+    orderNumber,
+    orderDate,
+    DATE_SUB(orderDate, INTERVAL 5 DAY) AS previous_date
+FROM orders;
+```
+
+---
+
+## 6. LAST_DAY()
+Returns the last day of the month.
+
+```sql
+SELECT LAST_DAY('2026-05-22');
+```
+
+Output:
+
+```text
+2026-05-31
+```
+
+Example:
+
+```sql
+SELECT 
+    orderNumber,
+    orderDate,
+    LAST_DAY(orderDate) AS month_end
+FROM orders;
+```
+
+---
+
+## 7. DATE_FORMAT()
+Formats a date into different styles.
+
+### Syntax
+
+```sql
+DATE_FORMAT(date, format)
+```
+
+### Example
+
+```sql
+SELECT DATE_FORMAT(NOW(), '%d-%m-%Y');
+```
+
+### Common Format Specifiers
+
+| Specifier | Meaning |
+|---|---|
+| `%Y` | 4-digit year |
+| `%y` | 2-digit year |
+| `%m` | month number |
+| `%M` | month name |
+| `%d` | day |
+| `%W` | weekday |
+| `%H` | hour (24h) |
+| `%i` | minutes |
+| `%s` | seconds |
+
+### Example
+
+```sql
+SELECT 
+    orderNumber,
+    DATE_FORMAT(orderDate, '%W, %M %d %Y') AS formatted_date
+FROM orders;
+```
+
+---
+
+## 8. MAKETIME()
+Creates a time value from hour, minute, second.
+
+### Syntax
+
+```sql
+MAKETIME(hour, minute, second)
+```
+
+### Example
+
+```sql
+SELECT MAKETIME(10, 30, 45);
+```
+
+Output:
+
+```text
+10:30:45
+```
+
+---
+
+## 9. MAKEDATE()
+Creates a date from year and day number.
+
+### Syntax
+
+```sql
+MAKEDATE(year, dayofyear)
+```
+
+### Example
+
+```sql
+SELECT MAKEDATE(2026, 100);
+```
+
+Output:
+
+```text
+2026-04-10
+```
+
+---
+
+## 10. DATEDIFF()
+Returns the number of days between two dates.
+
+### Syntax
+
+```sql
+DATEDIFF(date1, date2)
+```
+
+### Example
+
+```sql
+SELECT DATEDIFF('2026-06-01', '2026-05-22');
+```
+
+### Example with classicmodels
+
+```sql
+SELECT 
+    orderNumber,
+    shippedDate,
+    orderDate,
+    DATEDIFF(shippedDate, orderDate) AS shipping_days
+FROM orders;
+```
+
+---
+
+## 11. TIMEDIFF()
+Returns the difference between two time/datetime values.
+
+### Syntax
+
+```sql
+TIMEDIFF(time1, time2)
+```
+
+### Example
+
+```sql
+SELECT TIMEDIFF('18:00:00', '08:30:00');
+```
+
+Output:
+
+```text
+09:30:00
+```
+
+### Example with datetime
+
+```sql
+SELECT 
+    TIMEDIFF(
+        '2026-05-22 18:00:00',
+        '2026-05-22 08:00:00'
+    ) AS work_hours;
+```
+
+---
+
+# Combined Example
+
+```sql
+SELECT 
+    orderNumber,
+    orderDate,
+    shippedDate,
+    DATE_ADD(orderDate, INTERVAL 7 DAY) AS expected_ship,
+    DATEDIFF(shippedDate, orderDate) AS shipping_days,
+    DATE_FORMAT(orderDate, '%M %d %Y') AS formatted_order
+FROM orders;
+```
+
+
+---
+
+# MySQL STR_TO_DATE() Function
+
+`STR_TO_DATE()` in MySQL converts a string into a valid DATE, DATETIME, or TIME value using a specified format.
+
+---
+
+# Syntax
+
+```sql
+STR_TO_DATE(string, format)
+```
+
+- `string` → the date/time text
+- `format` → the format pattern
+
+---
+
+# Common Format Specifiers
+
+| Format | Meaning | Example |
+|---|---|---|
+| `%Y` | 4-digit year | 2026 |
+| `%y` | 2-digit year | 26 |
+| `%m` | Month (01-12) | 05 |
+| `%c` | Month (1-12) | 5 |
+| `%d` | Day (01-31) | 22 |
+| `%e` | Day (1-31) | 22 |
+| `%H` | Hour (00-23) | 14 |
+| `%h` | Hour (01-12) | 02 |
+| `%i` | Minutes | 30 |
+| `%s` | Seconds | 45 |
+| `%p` | AM/PM | PM |
+
+---
+
+# Examples
+
+## 1. Convert String to Date
+
+```sql
+SELECT STR_TO_DATE('05/22/2026', '%m/%d/%Y');
+```
+
+Result:
+
+```sql
+2026-05-22
+```
+
+---
+
+## 2. Convert String to Datetime
+
+```sql
+SELECT STR_TO_DATE(
+    '22-05-2026 14:30:45',
+    '%d-%m-%Y %H:%i:%s'
+);
+```
+
+Result:
+
+```sql
+2026-05-22 14:30:45
+```
+
+---
+
+## 3. Convert Month Name
+
+```sql
+SELECT STR_TO_DATE(
+    'May 22, 2026',
+    '%M %d, %Y'
+);
+```
+
+Result:
+
+```sql
+2026-05-22
+```
+
+---
+
+## 4. Using with the classicmodels Database
+
+Example: convert text input into a date for comparison.
+
+```sql
+SELECT customerName,
+       paymentDate
+FROM payments
+WHERE paymentDate =
+      STR_TO_DATE('01/15/2005', '%m/%d/%Y');
+```
+
+---
+
+## 5. Insert String Date into Table
+
+```sql
+INSERT INTO payments (
+    customerNumber,
+    checkNumber,
+    paymentDate,
+    amount
+)
+VALUES (
+    103,
+    'AB123',
+    STR_TO_DATE('22/05/2026', '%d/%m/%Y'),
+    5000
+);
+```
+
+---
+
+# Difference Between CAST() and STR_TO_DATE()
+
+| Function | Purpose |
+|---|---|
+| `CAST()` | General datatype conversion |
+| `STR_TO_DATE()` | Convert formatted string into date/time |
+
+Example:
+
+```sql
+SELECT CAST('2026-05-22' AS DATE);
+```
+
+vs
+
+```sql
+SELECT STR_TO_DATE('22/05/2026', '%d/%m/%Y');
+```
+
+---
+
+# Invalid Format Example
+
+```sql
+SELECT STR_TO_DATE('2026/22/05', '%m/%d/%Y');
+```
+
+Result:
+
+```sql
+NULL
+```
+
+Because the format does not match the string.
+
+---
+
+## Lab Exercises
+```
+1.Display all orders and calculate a shipping deadline that is 7 days after orderDate.
+2. Display the last day of the month for each orderDate.
+3. Display order dates in the following format:Friday, 22 May 2026
+4. Create Dates Using MAKEDATE() [Year 2026, Day 150, Year 2025, Day 1, Year 2024, Day 365]
+5. Display how many days it took to ship each order.
+6. Find orders where shipping took more than 5 days.
+7. Calculate the difference between two times: [18:30:00-08:15:00]
+8. Convert the following strings into valid MySQL dates: ['05/22/2026', '22-05-2026', '2026 January 15']
+9. Find all orders made after: 01/01/2004 (str_to_date, where)
+
+```
